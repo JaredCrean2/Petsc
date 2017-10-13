@@ -225,6 +225,9 @@ include("petsc_ksp.jl")
 # -------------------------------------
 include("petsc_pc.jl")
 
+#--------------------------------------
+include("petsc_options.jl")
+
 end  # end module
 
 
