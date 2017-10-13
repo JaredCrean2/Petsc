@@ -1,4 +1,4 @@
-export PetscMat, PetscMatSetType, PetscSetUp, PetscMatSetValues, PetscMatAssemblyBegin, PetscMatAssemblyEnd, PetscMatSetSizes, PetscMatGetSize, PetscMatGetValues, PetscMatGetOwnershipRange, PetscMatXAIJSetPreallocation, PetscMatMPIAIJSetPreallocation, PetscMatSetFromOptions, PetscMatGetInfo, PetscMatMatMult, PetscMatNorm, PetscMatZeroEntries, PetscMatSetValuesBlocked, MatSetOption, MatCreateShell, MatShellSetOperation, MatShellGetContext, MatGetType, MatCreateTranspose, MatTranspose
+export PetscMat, PetscMatSetType, PetscSetUp, PetscMatSetValues, PetscMatAssemblyBegin, PetscMatAssemblyEnd, PetscMatSetSizes, PetscMatGetSize, PetscMatGetValues, PetscMatGetOwnershipRange, PetscMatXAIJSetPreallocation, PetscMatMPIAIJSetPreallocation, PetscMatSetFromOptions, PetscMatGetInfo, PetscMatMatMult, PetscMatNorm, PetscMatZeroEntries, PetscMatSetValuesBlocked, MatSetOption, MatCreateShell, MatShellSetOperation, MatShellSetContext, MatShellGetContext, MatGetType, MatCreateTranspose, MatTranspose
 
 
 type PetscMat  <: AbstractArray{PetscScalar, 2}
@@ -39,6 +39,14 @@ function MatShellGetContext(arg1::PetscMat)
     ccall((:MatShellGetContext,petsc),PetscErrorCode,(Ptr{Void},Ref{Ptr{Void}}),arg1.pobj,arg2)
     return arg2[]  # turn it into a julia object here?
 end
+
+function MatShellSetContext(arg1::PetscMat, arg2::Ptr{Void})
+# get the user provided context for the matrix shell
+    ccall((:MatShellSetContext,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
+    return nothing  # turn it into a julia object here?
+end
+
+
 
 function MatGetType(arg1::PetscMat)
     arg2 = Ref{Ptr{UInt8}}()
@@ -247,6 +255,7 @@ end
                            vals::Array{T}, flag::Integer=PETSC_INSERT_VALUES)
 
     if flag == PETSC_INSERT_VALUES
+      println("STRANGE: inside PETSC_INSERT_VALUES")
       for i=1:length(idxn)
         for j=1:length(idxm)
           mat[idxm[j], idxn[i]] = vals[j, i]

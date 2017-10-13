@@ -8,6 +8,7 @@ export PETSC_NULL, PETSC_IGNORE, PETSC_DECIDE, PETSC_DETERMINE, PETSCDEFAULT, PE
 
 export PetscInt, PetscScalar, PetscBool, PetscErrorCode, PetscDataType, PetscReal
 
+export PetscIntNullArray
 export PETSC_INSERT_VALUES, PETSC_ADD_VALUES, PETSC_COPY_VALUESA
 export PETSC_TRUE, PETSC_FALSE
 export NORM_1, NORM_2, NORM_FROBENIUS, NORM_INFINITY, NORM_MAX
@@ -203,6 +204,9 @@ typealias PetscInt int_dtype
 
 # some useful type unions
 PetscInt_arr_or_null = Union{AbstractArray{PetscInt}, Ptr{Void}}
+
+# used to C_NULL in place of an array
+const PetscIntNullArray = pointer_to_array(Ptr{PetscInt}(0), 0)
 
 #=
 const PETSC_PI = pi
