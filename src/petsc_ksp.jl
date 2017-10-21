@@ -21,6 +21,8 @@ type KSP
 end
 
 
+global const KSP_NULL = KSP(C_NULL)
+
 function PetscDestroy(ksp::KSP)
     err = ccall((:KSPDestroy,petsc),PetscErrorCode,(Ptr{Ptr{Void}},),&ksp.pobj)
     println("KSPDestroy called")

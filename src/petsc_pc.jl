@@ -1,10 +1,15 @@
 export PC, KSPGetPC, PCSetType, PCGetType, PCFactorSetUseInPlace, PCFactorGetUseInPlace, PCSetReusePreconditioner, PCGetReusePreconditioner, PCFactorSetAllowDiagonalFill, PCFactorGetAllowDiagonalFill, PCFactorSetLevels, PCFactorGetLevels, PCSetReusePreconditioner, PCGetReusePreconditioner, PCBJacobiGetSubKSP, PCFactorSetFill, PCJacobiSetType, PCJacobiGetType
 
+# Shell PC
+export PCShellSetApply, PCShellSetSetUp, PCShellSetContext, PCShellGetContext
+
 # preconditioner contex
 # the KSP object creates the PC contex, so we don't provide a constructor
 type PC
   pobj::Ptr{Void}
 end
+
+global const PC_NULL = PC(C_NULL)
 
 function KSPGetPC(ksp::KSP)
     arr = Array(Ptr{Void}, 1)
@@ -21,6 +26,29 @@ function PCGetType(pc::PC)
     ccall((:PCGetType,petsc),PetscErrorCode,(Ptr{Void},Ptr{Ptr{UInt8}}), pc.pobj, arr)
     return bytestring(arr[1])
 end
+
+function PCShellSetApply(arg1::PC,arg2::Ptr{Void})
+    ccall((:PCShellSetApply,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
+end
+
+function PCShellSetSetUp(arg1::PC,arg2::Ptr{Void})
+    ccall((:PCShellSetSetUp,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
+end
+
+function PCShellSetContext(arg1::PC,arg2::Ptr{Void})
+    ccall((:PCShellSetContext,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
+end
+
+function PCShellGetContext(arg1::PC)
+    arg2 = Ref{Ptr{Void}}()
+    ccall((:PCShellGetContext,petsc),PetscErrorCode,(Ptr{Void},Ref{Ptr{Void}}),arg1.pobj,arg2)
+
+    return arg2[]
+end
+
+
+
+
 
 function PCFactorSetUseInPlace(pc::PC, arg2::PetscBool)
     ccall((:PCFactorSetUseInPlace,petsc),PetscErrorCode,(Ptr{Void},PetscBool),pc.pobj, arg2)
