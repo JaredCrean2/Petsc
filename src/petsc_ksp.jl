@@ -48,6 +48,11 @@ function KSPSolve(ksp::KSP, b::PetscVec, x::PetscVec)
     err = ccall((:KSPSolve,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void},Ptr{Void}), ksp.pobj, b.pobj, x.pobj)
 end
 
+function KSPSolveTranspose(ksp::KSP, b::PetscVec, x::PetscVec)
+    err = ccall((:KSPSolveTranspose,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void},Ptr{Void}), ksp.pobj, b.pobj, x.pobj)
+end
+
+
 function KSPSetUp(ksp::KSP)
     err = ccall((:KSPSetUp,petsc),PetscErrorCode,(Ptr{Void},), ksp.pobj)
 end
