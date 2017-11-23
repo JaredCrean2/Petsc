@@ -1,10 +1,11 @@
-export PC, PCCreate, KSPGetPC, KSPSetPC, PCSetType, PCGetType, PCFactorSetUseInPlace, PCFactorGetUseInPlace, PCSetReusePreconditioner, PCGetReusePreconditioner, PCFactorSetAllowDiagonalFill, PCFactorGetAllowDiagonalFill, PCFactorSetLevels, PCFactorGetLevels, PCSetReusePreconditioner, PCGetReusePreconditioner, PCBJacobiGetSubKSP, PCFactorSetFill, PCJacobiSetType, PCJacobiGetType
+export PC, PCCreate, PCSetFromOptions, KSPGetPC, KSPSetPC, PCSetType, PCGetType, PCFactorSetUseInPlace, PCFactorGetUseInPlace, PCSetReusePreconditioner, PCGetReusePreconditioner, PCFactorSetAllowDiagonalFill, PCFactorGetAllowDiagonalFill, PCFactorSetLevels, PCFactorGetLevels, PCSetReusePreconditioner, PCGetReusePreconditioner, PCBJacobiGetSubKSP, PCFactorSetFill, PCJacobiSetType, PCJacobiGetType
 
 # Shell PC
-export PCShellSetApply, PCShellSetSetUp, PCShellSetContext, PCShellGetContext
+export PCShellSetApply, PCShellSetApplyTranspose, PCShellSetSetUp,
+       PCShellSetContext, PCShellGetContext
 
 # developer PC interface
-export PCApply, PCApplyTranspose, PCApplyTransposeExists
+export PCApply, PCSetUp, PCApplyTranspose, PCApplyTransposeExists
 
 # preconditioner contex
 # the KSP object creates the PC contex, so we don't provide a constructor
@@ -16,10 +17,22 @@ global const PC_NULL = PC(C_NULL)
 
 function PCCreate(comm::MPI.Comm)
   arg2 = Ref{Ptr{Void}}() 
-  ccall((:PCCreate,petsc),PetscErrorCode,(comjm_type,Ptr{PC}),comm,arg2)
+  ccall((:PCCreate,petsc),PetscErrorCode,(comm_type,Ptr{Ptr{Void}}),comm,arg2)
 
   return PC(arg2[])
 end
+
+function PetscDestroy(arg1::PC)
+  if arg1.pobj != C_NULL
+    ccall((:PCDestroy,petsc),PetscErrorCode,(Ptr{Ptr{Void}},),&arg1.pobj)
+  end
+end
+
+
+function PCSetFromOptions(arg1::PC)
+    ccall((:PCSetFromOptions,petsc),PetscErrorCode,(Ptr{Void},),arg1.pobj)
+end
+
 
 function KSPGetPC(ksp::KSP)
     arr = Array(Ptr{Void}, 1)
@@ -46,6 +59,11 @@ end
 function PCShellSetApply(arg1::PC,arg2::Ptr{Void})
     ccall((:PCShellSetApply,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
 end
+
+function PCShellSetApplyTranspose(arg1::PC,arg2::Ptr{Void})
+    ccall((:PCShellSetApplyTranspose,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
+end
+
 
 function PCShellSetSetUp(arg1::PC,arg2::Ptr{Void})
     ccall((:PCShellSetSetUp,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void}),arg1.pobj,arg2)
@@ -151,6 +169,7 @@ function PCJacobiGetType(pc::PC)
 end
 
 function PCApply(arg1::PC,arg2::PetscVec,arg3::PetscVec)
+  println("pc.pobj = ", arg1.pobj)
     ccall((:PCApply,petsc),PetscErrorCode,(Ptr{Void},Ptr{Void},Ptr{Void}),arg1.pobj ,arg2.pobj, arg3.pobj)
 end
 
@@ -165,5 +184,8 @@ function PCApplyTransposeExists(arg1::PC)
     return arg2[] == 1
 end
 
+function PCSetUp(arg1::PC)
+    ccall((:PCSetUp,petsc),PetscErrorCode,(Ptr{Void},),arg1.pobj)
+end
 
 

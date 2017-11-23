@@ -72,6 +72,7 @@ function PetscInitialized()
 end
 
 function PetscFinalize()
+  println("finalizing PETSc")
   gc() # call garbage collection to force all PETSc objects be destroy that are queued up for destruction
   return ccall( (:PetscFinalize,  libpetsclocation),Int32,());
 end

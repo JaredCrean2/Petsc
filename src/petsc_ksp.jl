@@ -1,5 +1,5 @@
 
-export KSP, KSPSetOperators, KSPSetFromOptions, KSPSolve,  KSPSetUp
+export KSP, KSPSetOperators, KSPSetFromOptions, KSPSolve, KSPSolveTranspose, KSPSetUp, KSP_NULL
 
 export KSPGetConvergedReason, PetscView, KSPSetType, KSPGetType, KSPSetTolerances, KSPGetTolerances, KSPSetInitialGuessNonzero, KSPGetInitialGuessNonzero, KSPGetResidualNorm
 

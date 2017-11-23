@@ -192,6 +192,7 @@ end
   end
 
   function MatSetOption(mat::PetscMat,arg2::MatOption,arg3::Union{Integer, Bool})
+      println("mat.pobj = ", mat.pobj)
       ierr = ccall((:MatSetOption, libpetsclocation),PetscErrorCode, (Ptr{Void},MatOption,PetscBool), mat.pobj, arg2, arg3)
 
       if ierr != 0
