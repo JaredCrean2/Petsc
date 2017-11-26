@@ -442,6 +442,15 @@ function PetscMatShift(mat::PetscMat, a::PetscScalar)
     ccall((:MatShift,petsc),PetscErrorCode,(Ptr{Void},PetscScalar), mat.pobj, a)
 end
 
+function PetscMatShift(mat::AbstractMatrix, a::PetscScalar)
+
+  for i=1:size(mat, 1)
+    mat[i, i] += a
+  end
+
+  return nothing
+end
+
 export PetscMatMult, PetscMatMultAdd, PetscMatMultTranspose, PetscMatMultHermitianTranspose
 
 function PetscMatMult(mat::PetscMat, x::PetscVec, y::PetscVec)
